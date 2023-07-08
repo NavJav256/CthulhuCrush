@@ -120,6 +120,18 @@ public:
 	UFUNCTION()
 	void PestilenceButtonPressed();
 
+	UFUNCTION()
+	void WidowButtonPressed();
+
+	UFUNCTION()
+	void GruudButtonPressed();
+
+	UFUNCTION()
+	void BigTreeButtonPressed();
+
+	UFUNCTION()
+	void CthulhuButtonPressed();
+
 protected:
 
 	virtual bool Initialize() override;
@@ -208,6 +220,18 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* PestilenceButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* WidowButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* GruudButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* BigTreeButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* CthulhuButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* CharacterButton;
