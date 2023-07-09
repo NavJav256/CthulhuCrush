@@ -165,6 +165,8 @@ protected:
 
 	void PlayMusic();
 
+	void OnAudioCompleted();
+
 	void CreateTraitPool();
 
 	void SelectCharacterTraits();

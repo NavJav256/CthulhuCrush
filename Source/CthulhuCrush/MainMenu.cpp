@@ -100,7 +100,23 @@ void UMainMenu::PlayMusic()
 			AudioComponent->SetVolumeMultiplier(0.15f);
 			AudioComponent->SetPitchMultiplier(1.0f);
 			AudioComponent->bAutoDestroy = true;
-			AudioComponent->OnAudioFinished.AddDynamic(this, &UMainMenu::PlayMusic);
+			AudioComponent->OnAudioFinished.AddDynamic(this, &UMainMenu::OnAudioCompleted);
+			AudioComponent->Play();
+		}
+	}
+}
+
+void UMainMenu::OnAudioCompleted()
+{
+	if (MusicCue)
+	{
+		UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, MusicCue);
+		if (AudioComponent)
+		{
+			AudioComponent->SetVolumeMultiplier(0.15f);
+			AudioComponent->SetPitchMultiplier(1.0f);
+			AudioComponent->bAutoDestroy = true;
+			AudioComponent->OnAudioFinished.AddDynamic(this, &UMainMenu::OnAudioCompleted);
 			AudioComponent->Play();
 		}
 	}
