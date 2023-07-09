@@ -326,9 +326,6 @@ private:
 	UButton* DictionaryButton;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Dictionary;
-
-	UPROPERTY(meta = (BindWidget))
 	UButton* HandbookButton;
 
 	
