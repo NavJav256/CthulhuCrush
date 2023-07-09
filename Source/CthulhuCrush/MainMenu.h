@@ -9,7 +9,6 @@
 /**
  * 
  */
-
 USTRUCT(BlueprintType)
 struct FSocial
 {
@@ -34,7 +33,13 @@ struct FProfile
 	FString Name;
 
 	UPROPERTY(EditAnywhere, Category = "Profile")
-	FString Bio;
+	class UTexture2D* ProfilePic;
+
+	UPROPERTY(EditAnywhere, Category = "Profile")
+	UTexture2D* CultSign;
+
+	UPROPERTY(EditAnywhere, Category = "Profile")
+	TArray<FString> Bio;
 
 	UPROPERTY(EditAnywhere, Category = "Profile")
 	FString Height;
@@ -52,13 +57,26 @@ struct FProfile
 	TArray<FString> DealBreakers;
 
 	UPROPERTY(EditAnywhere, Category = "Profile")
-	class UTexture2D* ProfilePic;
-
-	UPROPERTY(EditAnywhere, Category = "Profile")
-	UTexture2D* CultSign;
-
-	UPROPERTY(EditAnywhere, Category = "Profile")
 	TArray<FSocial> Feed;
+
+	UPROPERTY(EditAnywhere, Category = "Profile")
+	TArray<FString> SearchResults;
+
+};
+
+USTRUCT(BlueprintType)
+struct FTrait
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = "Trait")
+	FString TraitName;
+
+	UPROPERTY(EditAnywhere, Category = "Trait")
+	TArray<FString> Disqualifies;
+
+	UPROPERTY(VisibleAnywhere, Category = "Trait")
+	bool bOwning;
 
 };
 
@@ -132,6 +150,15 @@ public:
 	UFUNCTION()
 	void CthulhuButtonPressed();
 
+	UFUNCTION()
+	void ConfirmButtonPressed();
+
+	UFUNCTION()
+	void HoverConfirmButton();
+
+	UFUNCTION()
+	void UnHoverConfirmButton();
+
 protected:
 
 	virtual bool Initialize() override;
@@ -139,6 +166,17 @@ protected:
 private:
 
 	bool DisabledButtons = true;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FTrait> Traits;
+
+	UPROPERTY(VisibleAnywhere)
+	FString CorrectAnswer;
+
+	FString SelectedAnswer;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<FTrait> OwningTraits;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
@@ -168,6 +206,21 @@ private:
 	UWidget* SearchScreen;
 
 	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SearchResultText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SearchTextOne;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SearchTextTwo;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SearchTextThree;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SearchTextFour;
+
+	UPROPERTY(meta = (BindWidget))
 	UWidget* SocialScreen;
 
 	UPROPERTY(meta = (BindWidget))
@@ -195,10 +248,16 @@ private:
 	class UImage* ProfileImage;
 
 	UPROPERTY(meta = (BindWidget))
+	UImage* CultSign;
+
+	UPROPERTY(meta = (BindWidget))
 	UTextBlock* NameText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* BioText;
+	class UScrollBox* BioBox;
+
+	UPROPERTY(EditAnywhere, Category = "Bio")
+	float BioSpacer = 20.f;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* HeightText;
@@ -237,13 +296,22 @@ private:
 	UButton* CharacterButton;
 
 	UPROPERTY(meta = (BindWidget))
+	UImage* SelectedProfileImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* ConfirmButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ConfirmText;
+
+	UPROPERTY(meta = (BindWidget))
 	UButton* SearchButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* SocialButton;
 
 	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* FeedBox;
+	UScrollBox* FeedBox;
 
 	UPROPERTY(EditAnywhere, Category = "Social Media")
 	float PostSpacer = 30.f;

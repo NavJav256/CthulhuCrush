@@ -13,6 +13,20 @@ bool UMainMenu::Initialize()
 {
 	if(!Super::Initialize()) return false;
 
+	//Pick Correct Answer
+
+	//Remove traits that would disqualify correct answer from trait pool
+
+	//set all traits from remaining
+
+	//somehow compare correct answer to selection
+
+	/*
+	if (Traits)
+	{
+
+	}
+	*/
 	if (PlayButton)
 	{
 		PlayButton->OnPressed.AddDynamic(this, &UMainMenu::PlayButtonPressed);
@@ -68,7 +82,12 @@ bool UMainMenu::Initialize()
 	{
 		CthulhuButton->OnPressed.AddDynamic(this, &UMainMenu::CthulhuButtonPressed);
 	}
-
+	if (ConfirmButton)
+	{
+		ConfirmButton->OnPressed.AddDynamic(this, &UMainMenu::ConfirmButtonPressed);
+		ConfirmButton->OnHovered.AddDynamic(this, &UMainMenu::HoverConfirmButton);
+		ConfirmButton->OnUnhovered.AddDynamic(this, &UMainMenu::UnHoverConfirmButton);
+	}
 	return true;
 }
 
@@ -144,6 +163,27 @@ void UMainMenu::UnHoverExitButton()
 	if (ExitText)
 	{
 		DecreaseTextSize(ExitText);
+	}
+}
+
+void UMainMenu::ConfirmButtonPressed()
+{
+	//End game
+}
+
+void UMainMenu::HoverConfirmButton()
+{
+	if (ConfirmText)
+	{
+		IncreaseTextSize(ConfirmText);
+	}
+}
+
+void UMainMenu::UnHoverConfirmButton()
+{
+	if (ConfirmText)
+	{
+		DecreaseTextSize(ConfirmText);
 	}
 }
 
@@ -227,36 +267,77 @@ void UMainMenu::PestilenceButtonPressed()
 	{
 		bool Valid =
 			ProfileImage &&
+			SelectedProfileImage &&
 			NameText &&
-			BioText &&
 			HeightText &&
 			WeightText &&
 			RaceText &&
 			HobbiesText &&
+			SearchResultText &&
+			SearchTextOne &&
+			SearchTextTwo &&
+			SearchTextThree &&
+			SearchTextFour && 
 			DBText;
 
 		if (Valid && !Profiles.IsEmpty())
 		{
 			NameText->SetText(FText::FromString(Profiles[0].Name));
-			BioText->SetText(FText::FromString(Profiles[0].Bio));
 			HeightText->SetText(FText::FromString(Profiles[0].Height));
 			WeightText->SetText(FText::FromString(Profiles[0].Weight));
 			RaceText->SetText(FText::FromString(Profiles[0].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[0].ProfilePic);
-			/*
-			FString Hobbies = FString(TEXT("Hobbies:\n"));
-			FString DBs = FString(TEXT("Deal Breakers:\n"));
+			SelectedProfileImage->SetBrushFromTexture(Profiles[0].ProfilePic);
+			CultSign->SetBrushFromTexture(Profiles[0].CultSign);
+			SearchResultText->SetText(FText::FromString(Profiles[0].Name));
+			SearchTextOne->SetText(FText::FromString(Profiles[0].SearchResults[0]));
+			SearchTextTwo->SetText(FText::FromString(Profiles[0].SearchResults[1]));
+			SearchTextThree->SetText(FText::FromString(Profiles[0].SearchResults[2]));
+			SearchTextFour->SetText(FText::FromString(Profiles[0].SearchResults[3]));
+
+			if (BioBox)
+			{
+				BioBox->ClearChildren();
+				for (auto Line : Profiles[0].Bio)
+				{
+					UTextBlock* NewBioLine = NewObject<UTextBlock>(BioBox);
+					if (NewBioLine)
+					{
+						NewBioLine->SetAutoWrapText(true);
+						FSlateFontInfo FontInfo = NewBioLine->GetFont();
+						FontInfo.Size = 16;
+						NewBioLine->SetFont(FontInfo);
+						NewBioLine->SetText(FText::FromString(Line));
+						BioBox->AddChild(NewBioLine);
+					}
+
+					USizeBox* NewLineSpacer = NewObject<USizeBox>(BioBox);
+					if (NewLineSpacer)
+					{
+						NewLineSpacer->SetMinDesiredHeight(BioSpacer);
+						BioBox->AddChild(NewLineSpacer);
+					}
+				}
+
+			}
+			
+			FString Hobbies;
+			FString DBs;
+			Hobbies.Append(TEXT("Hobbies: \n"));
+			DBs.Append(TEXT("Dealbreakers: \n"));
 			for (FString Hobby : Profiles[0].Hobbies)
 			{
-				Hobbies.Append(FString::Printf("- %s \n", *Hobby));
+				Hobbies.Append(Hobby);
+				Hobbies.Append(TEXT("\n"));
 			}
 			for (FString DB : Profiles[0].DealBreakers)
 			{
-				DBs.Append(FString::Printf("- %s \n", *DB));
+				DBs.Append(DB);
+				DBs.Append(TEXT("\n"));
 			}
 			HobbiesText->SetText(FText::FromString(Hobbies));
 			DBText->SetText(FText::FromString(DBs));
-			*/
+			
 		}
 
 		if (FeedBox)
@@ -324,36 +405,76 @@ void UMainMenu::WidowButtonPressed()
 	{
 		bool Valid =
 			ProfileImage &&
+			SelectedProfileImage &&
 			NameText &&
-			BioText &&
 			HeightText &&
 			WeightText &&
 			RaceText &&
 			HobbiesText &&
+			SearchResultText &&
+			SearchTextOne &&
+			SearchTextTwo &&
+			SearchTextThree &&
+			SearchTextFour &&
 			DBText;
 
 		if (Valid && !Profiles.IsEmpty())
 		{
 			NameText->SetText(FText::FromString(Profiles[1].Name));
-			BioText->SetText(FText::FromString(Profiles[1].Bio));
 			HeightText->SetText(FText::FromString(Profiles[1].Height));
 			WeightText->SetText(FText::FromString(Profiles[1].Weight));
 			RaceText->SetText(FText::FromString(Profiles[1].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[1].ProfilePic);
-			/*
-			FString Hobbies = FString(TEXT("Hobbies:\n"));
-			FString DBs = FString(TEXT("Deal Breakers:\n"));
-			for (FString Hobby : Profiles[0].Hobbies)
+			SelectedProfileImage->SetBrushFromTexture(Profiles[1].ProfilePic);
+			CultSign->SetBrushFromTexture(Profiles[1].CultSign);
+			SearchResultText->SetText(FText::FromString(Profiles[1].Name));
+			SearchTextOne->SetText(FText::FromString(Profiles[1].SearchResults[0]));
+			SearchTextTwo->SetText(FText::FromString(Profiles[1].SearchResults[1]));
+			SearchTextThree->SetText(FText::FromString(Profiles[1].SearchResults[2]));
+			SearchTextFour->SetText(FText::FromString(Profiles[1].SearchResults[3]));
+
+			if (BioBox)
 			{
-				Hobbies.Append(FString::Printf("- %s \n", *Hobby));
+				BioBox->ClearChildren();
+				for (auto Line : Profiles[1].Bio)
+				{
+					UTextBlock* NewBioLine = NewObject<UTextBlock>(BioBox);
+					if (NewBioLine)
+					{
+						NewBioLine->SetAutoWrapText(true);
+						FSlateFontInfo FontInfo = NewBioLine->GetFont();
+						FontInfo.Size = 16;
+						NewBioLine->SetFont(FontInfo);
+						NewBioLine->SetText(FText::FromString(Line));
+						BioBox->AddChild(NewBioLine);
+					}
+
+					USizeBox* NewLineSpacer = NewObject<USizeBox>(BioBox);
+					if (NewLineSpacer)
+					{
+						NewLineSpacer->SetMinDesiredHeight(BioSpacer);
+						BioBox->AddChild(NewLineSpacer);
+					}
+				}
+
 			}
-			for (FString DB : Profiles[0].DealBreakers)
+			
+			FString Hobbies;
+			FString DBs;
+			Hobbies.Append(TEXT("Hobbies: \n"));
+			DBs.Append(TEXT("Dealbreakers: \n"));
+			for (FString Hobby : Profiles[1].Hobbies)
 			{
-				DBs.Append(FString::Printf("- %s \n", *DB));
+				Hobbies.Append(Hobby);
+				Hobbies.Append(TEXT("\n"));
+			}
+			for (FString DB : Profiles[1].DealBreakers)
+			{
+				DBs.Append(DB);
+				DBs.Append(TEXT("\n"));
 			}
 			HobbiesText->SetText(FText::FromString(Hobbies));
 			DBText->SetText(FText::FromString(DBs));
-			*/
 		}
 
 		if (FeedBox)
@@ -421,36 +542,77 @@ void UMainMenu::GruudButtonPressed()
 	{
 		bool Valid =
 			ProfileImage &&
+			SelectedProfileImage &&
 			NameText &&
-			BioText &&
 			HeightText &&
 			WeightText &&
 			RaceText &&
 			HobbiesText &&
+			SearchResultText &&
+			SearchTextOne &&
+			SearchTextTwo &&
+			SearchTextThree &&
+			SearchTextFour &&
 			DBText;
 
 		if (Valid && !Profiles.IsEmpty())
 		{
 			NameText->SetText(FText::FromString(Profiles[2].Name));
-			BioText->SetText(FText::FromString(Profiles[2].Bio));
 			HeightText->SetText(FText::FromString(Profiles[2].Height));
 			WeightText->SetText(FText::FromString(Profiles[2].Weight));
 			RaceText->SetText(FText::FromString(Profiles[2].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[2].ProfilePic);
-			/*
-			FString Hobbies = FString(TEXT("Hobbies:\n"));
-			FString DBs = FString(TEXT("Deal Breakers:\n"));
-			for (FString Hobby : Profiles[0].Hobbies)
+			SelectedProfileImage->SetBrushFromTexture(Profiles[2].ProfilePic);
+			CultSign->SetBrushFromTexture(Profiles[2].CultSign);
+			SearchResultText->SetText(FText::FromString(Profiles[2].Name));
+			SearchTextOne->SetText(FText::FromString(Profiles[2].SearchResults[0]));
+			SearchTextTwo->SetText(FText::FromString(Profiles[2].SearchResults[1]));
+			SearchTextThree->SetText(FText::FromString(Profiles[2].SearchResults[2]));
+			SearchTextFour->SetText(FText::FromString(Profiles[2].SearchResults[3]));
+			
+
+			if (BioBox)
 			{
-				Hobbies.Append(FString::Printf("- %s \n", *Hobby));
+				BioBox->ClearChildren();
+				for (auto Line : Profiles[2].Bio)
+				{
+					UTextBlock* NewBioLine = NewObject<UTextBlock>(BioBox);
+					if (NewBioLine)
+					{
+						NewBioLine->SetAutoWrapText(true);
+						FSlateFontInfo FontInfo = NewBioLine->GetFont();
+						FontInfo.Size = 16;
+						NewBioLine->SetFont(FontInfo);
+						NewBioLine->SetText(FText::FromString(Line));
+						BioBox->AddChild(NewBioLine);
+					}
+
+					USizeBox* NewLineSpacer = NewObject<USizeBox>(BioBox);
+					if (NewLineSpacer)
+					{
+						NewLineSpacer->SetMinDesiredHeight(BioSpacer);
+						BioBox->AddChild(NewLineSpacer);
+					}
+				}
+
 			}
-			for (FString DB : Profiles[0].DealBreakers)
+			
+			FString Hobbies;
+			FString DBs;
+			Hobbies.Append(TEXT("Hobbies: \n"));
+			DBs.Append(TEXT("Dealbreakers: \n"));
+			for (FString Hobby : Profiles[2].Hobbies)
 			{
-				DBs.Append(FString::Printf("- %s \n", *DB));
+				Hobbies.Append(Hobby);
+				Hobbies.Append(TEXT("\n"));
+			}
+			for (FString DB : Profiles[2].DealBreakers)
+			{
+				DBs.Append(DB);
+				DBs.Append(TEXT("\n"));
 			}
 			HobbiesText->SetText(FText::FromString(Hobbies));
 			DBText->SetText(FText::FromString(DBs));
-			*/
 		}
 
 		if (FeedBox)
@@ -518,36 +680,76 @@ void UMainMenu::BigTreeButtonPressed()
 	{
 		bool Valid =
 			ProfileImage &&
+			SelectedProfileImage &&
 			NameText &&
-			BioText &&
 			HeightText &&
 			WeightText &&
 			RaceText &&
 			HobbiesText &&
+			SearchResultText &&
+			SearchTextOne &&
+			SearchTextTwo &&
+			SearchTextThree &&
+			SearchTextFour &&
 			DBText;
 
 		if (Valid && !Profiles.IsEmpty())
 		{
 			NameText->SetText(FText::FromString(Profiles[3].Name));
-			BioText->SetText(FText::FromString(Profiles[3].Bio));
 			HeightText->SetText(FText::FromString(Profiles[3].Height));
 			WeightText->SetText(FText::FromString(Profiles[3].Weight));
 			RaceText->SetText(FText::FromString(Profiles[3].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[3].ProfilePic);
-			/*
-			FString Hobbies = FString(TEXT("Hobbies:\n"));
-			FString DBs = FString(TEXT("Deal Breakers:\n"));
-			for (FString Hobby : Profiles[0].Hobbies)
+			SelectedProfileImage->SetBrushFromTexture(Profiles[3].ProfilePic);
+			CultSign->SetBrushFromTexture(Profiles[3].CultSign);
+			SearchResultText->SetText(FText::FromString(Profiles[3].Name));
+			SearchTextOne->SetText(FText::FromString(Profiles[3].SearchResults[0]));
+			SearchTextTwo->SetText(FText::FromString(Profiles[3].SearchResults[1]));
+			SearchTextThree->SetText(FText::FromString(Profiles[3].SearchResults[2]));
+			SearchTextFour->SetText(FText::FromString(Profiles[3].SearchResults[3]));
+
+			if (BioBox)
 			{
-				Hobbies.Append(FString::Printf("- %s \n", *Hobby));
+				BioBox->ClearChildren();
+				for (auto Line : Profiles[3].Bio)
+				{
+					UTextBlock* NewBioLine = NewObject<UTextBlock>(BioBox);
+					if (NewBioLine)
+					{
+						NewBioLine->SetAutoWrapText(true);
+						FSlateFontInfo FontInfo = NewBioLine->GetFont();
+						FontInfo.Size = 16;
+						NewBioLine->SetFont(FontInfo);
+						NewBioLine->SetText(FText::FromString(Line));
+						BioBox->AddChild(NewBioLine);
+					}
+
+					USizeBox* NewLineSpacer = NewObject<USizeBox>(BioBox);
+					if (NewLineSpacer)
+					{
+						NewLineSpacer->SetMinDesiredHeight(BioSpacer);
+						BioBox->AddChild(NewLineSpacer);
+					}
+				}
+
 			}
-			for (FString DB : Profiles[0].DealBreakers)
+			
+			FString Hobbies;
+			FString DBs;
+			Hobbies.Append(TEXT("Hobbies: \n"));
+			DBs.Append(TEXT("Dealbreakers: \n"));
+			for (FString Hobby : Profiles[3].Hobbies)
 			{
-				DBs.Append(FString::Printf("- %s \n", *DB));
+				Hobbies.Append(Hobby);
+				Hobbies.Append(TEXT("\n"));
+			}
+			for (FString DB : Profiles[3].DealBreakers)
+			{
+				DBs.Append(DB);
+				DBs.Append(TEXT("\n"));
 			}
 			HobbiesText->SetText(FText::FromString(Hobbies));
 			DBText->SetText(FText::FromString(DBs));
-			*/
 		}
 
 		if (FeedBox)
@@ -615,36 +817,76 @@ void UMainMenu::CthulhuButtonPressed()
 	{
 		bool Valid =
 			ProfileImage &&
+			SelectedProfileImage &&
 			NameText &&
-			BioText &&
 			HeightText &&
 			WeightText &&
 			RaceText &&
 			HobbiesText &&
+			SearchResultText &&
+			SearchTextOne &&
+			SearchTextTwo &&
+			SearchTextThree &&
+			SearchTextFour &&
 			DBText;
 
 		if (Valid && !Profiles.IsEmpty())
 		{
 			NameText->SetText(FText::FromString(Profiles[4].Name));
-			BioText->SetText(FText::FromString(Profiles[4].Bio));
 			HeightText->SetText(FText::FromString(Profiles[4].Height));
 			WeightText->SetText(FText::FromString(Profiles[4].Weight));
 			RaceText->SetText(FText::FromString(Profiles[4].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[4].ProfilePic);
-			/*
-			FString Hobbies = FString(TEXT("Hobbies:\n"));
-			FString DBs = FString(TEXT("Deal Breakers:\n"));
-			for (FString Hobby : Profiles[0].Hobbies)
+			SelectedProfileImage->SetBrushFromTexture(Profiles[4].ProfilePic);
+			CultSign->SetBrushFromTexture(Profiles[4].CultSign);
+			SearchResultText->SetText(FText::FromString(Profiles[4].Name));
+			SearchTextOne->SetText(FText::FromString(Profiles[4].SearchResults[0]));
+			SearchTextTwo->SetText(FText::FromString(Profiles[4].SearchResults[1]));
+			SearchTextThree->SetText(FText::FromString(Profiles[4].SearchResults[2]));
+			SearchTextFour->SetText(FText::FromString(Profiles[4].SearchResults[3]));
+
+			if (BioBox)
 			{
-				Hobbies.Append(FString::Printf("- %s \n", *Hobby));
+				BioBox->ClearChildren();
+				for (auto Line : Profiles[4].Bio)
+				{
+					UTextBlock* NewBioLine = NewObject<UTextBlock>(BioBox);
+					if (NewBioLine)
+					{
+						NewBioLine->SetAutoWrapText(true);
+						FSlateFontInfo FontInfo = NewBioLine->GetFont();
+						FontInfo.Size = 16;
+						NewBioLine->SetFont(FontInfo);
+						NewBioLine->SetText(FText::FromString(Line));
+						BioBox->AddChild(NewBioLine);
+					}
+
+					USizeBox* NewLineSpacer = NewObject<USizeBox>(BioBox);
+					if (NewLineSpacer)
+					{
+						NewLineSpacer->SetMinDesiredHeight(BioSpacer);
+						BioBox->AddChild(NewLineSpacer);
+					}
+				}
+
 			}
-			for (FString DB : Profiles[0].DealBreakers)
+			
+			FString Hobbies;
+			FString DBs;
+			Hobbies.Append(TEXT("Hobbies: \n"));
+			DBs.Append(TEXT("Dealbreakers: \n"));
+			for (FString Hobby : Profiles[4].Hobbies)
 			{
-				DBs.Append(FString::Printf("- %s \n", *DB));
+				Hobbies.Append(Hobby);
+				Hobbies.Append(TEXT("\n"));
+			}
+			for (FString DB : Profiles[4].DealBreakers)
+			{
+				DBs.Append(DB);
+				DBs.Append(TEXT("\n"));
 			}
 			HobbiesText->SetText(FText::FromString(Hobbies));
 			DBText->SetText(FText::FromString(DBs));
-			*/
 		}
 
 		if (FeedBox)
