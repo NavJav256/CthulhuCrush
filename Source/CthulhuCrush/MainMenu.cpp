@@ -8,8 +8,9 @@
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/SizeBox.h"
-#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 bool UMainMenu::Initialize()
 {
@@ -22,19 +23,8 @@ bool UMainMenu::Initialize()
 
 	SelectCharacterTraits();
 
-	if (MusicCue)
-	{		
-		UGameplayStatics::PlaySound2D(
-			this,
-			MusicCue,
-			1.0f,        
-			1.0f,        
-			0.0f,        
-			nullptr,
-			nullptr,       
-			true         
-		);
-	}
+	PlayMusic();
+	
 
 	if (PlayButton)
 	{
@@ -98,6 +88,22 @@ bool UMainMenu::Initialize()
 		ConfirmButton->OnUnhovered.AddDynamic(this, &UMainMenu::UnHoverConfirmButton);
 	}
 	return true;
+}
+
+void UMainMenu::PlayMusic()
+{
+	if (MusicCue)
+	{
+		UAudioComponent* AudioComponent = UGameplayStatics::SpawnSound2D(this, MusicCue);
+		if (AudioComponent)
+		{
+			AudioComponent->SetVolumeMultiplier(0.15f);
+			AudioComponent->SetPitchMultiplier(1.0f);
+			AudioComponent->bAutoDestroy = true;
+			AudioComponent->OnAudioFinished.AddDynamic(this, &UMainMenu::PlayMusic);
+			AudioComponent->Play();
+		}
+	}
 }
 
 void UMainMenu::CreateTraitPool()

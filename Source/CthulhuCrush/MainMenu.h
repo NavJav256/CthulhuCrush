@@ -163,6 +163,8 @@ protected:
 
 	virtual bool Initialize() override;
 
+	void PlayMusic();
+
 	void CreateTraitPool();
 
 	void SelectCharacterTraits();
