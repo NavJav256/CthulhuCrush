@@ -8,6 +8,8 @@
 #include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/SizeBox.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 bool UMainMenu::Initialize()
 {
@@ -19,6 +21,20 @@ bool UMainMenu::Initialize()
 	CreateTraitPool();
 
 	SelectCharacterTraits();
+
+	if (MusicCue)
+	{		
+		UGameplayStatics::PlaySound2D(
+			this,
+			MusicCue,
+			1.0f,        
+			1.0f,        
+			0.0f,        
+			nullptr,
+			nullptr,       
+			true         
+		);
+	}
 
 	if (PlayButton)
 	{
@@ -187,6 +203,10 @@ void UMainMenu::Setup()
 
 void UMainMenu::PlayButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
 	if (Game)
 	{
 		SwitchMenu(Game);
@@ -243,6 +263,11 @@ void UMainMenu::UnHoverExitButton()
 
 void UMainMenu::ConfirmButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (EndScreenText)
 	{
 		FString EndText;
@@ -256,9 +281,9 @@ void UMainMenu::ConfirmButtonPressed()
 		}
 		EndScreenText->SetText(FText::FromString(EndText));
 	}
-	if (EndScreen)
+	if (EndMenu)
 	{
-		SwitchGameMenu(EndScreen);
+		SwitchMenu(EndMenu);
 	}
 
 }
@@ -295,6 +320,11 @@ void UMainMenu::DecreaseTextSize(UTextBlock* Text)
 
 void UMainMenu::GalleryButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (GalleryScreen)
 	{
 		SwitchGameMenu(GalleryScreen);
@@ -303,6 +333,11 @@ void UMainMenu::GalleryButtonPressed()
 
 void UMainMenu::CharacterButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (CharacterScreen)
 	{
 		SwitchGameMenu(CharacterScreen);
@@ -311,6 +346,11 @@ void UMainMenu::CharacterButtonPressed()
 
 void UMainMenu::SearchButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (!DisabledButtons)
 	{
 		if (SearchScreen)
@@ -322,6 +362,11 @@ void UMainMenu::SearchButtonPressed()
 
 void UMainMenu::SocialButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (!DisabledButtons)
 	{
 		if (SocialScreen)
@@ -333,6 +378,11 @@ void UMainMenu::SocialButtonPressed()
 
 void UMainMenu::DictionaryButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+	
 	if (DictionaryScreen)
 	{
 		SwitchGameMenu(DictionaryScreen);
@@ -341,6 +391,10 @@ void UMainMenu::DictionaryButtonPressed()
 
 void UMainMenu::HandbookButtonPressed()
 {
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
 
 	if (HandbookScreen)
 	{
@@ -354,6 +408,13 @@ void UMainMenu::PestilenceButtonPressed()
 	{
 		DisabledButtons = false;
 	}
+
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+
+	SelectedAnswer = TEXT("Pestilence");
 
 	if (ProfileScreen)
 	{
@@ -497,6 +558,13 @@ void UMainMenu::WidowButtonPressed()
 		DisabledButtons = false;
 	}
 
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+
+	SelectedAnswer = TEXT("The Heady One");
+
 	if (ProfileScreen)
 	{
 		bool Valid =
@@ -637,6 +705,13 @@ void UMainMenu::GruudButtonPressed()
 	{
 		DisabledButtons = false;
 	}
+
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+
+	SelectedAnswer = TEXT("Gruud The Devourer");
 
 	if (ProfileScreen)
 	{
@@ -780,6 +855,13 @@ void UMainMenu::BigTreeButtonPressed()
 		DisabledButtons = false;
 	}
 
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+
+	SelectedAnswer = TEXT("Big Tree");
+
 	if (ProfileScreen)
 	{
 		bool Valid =
@@ -920,6 +1002,13 @@ void UMainMenu::CthulhuButtonPressed()
 	{
 		DisabledButtons = false;
 	}
+
+	if (ClickSoundCue)
+	{
+		UGameplayStatics::PlaySound2D(this, ClickSoundCue);
+	}
+
+	SelectedAnswer = TEXT("Cthulhu");
 
 	if (ProfileScreen)
 	{

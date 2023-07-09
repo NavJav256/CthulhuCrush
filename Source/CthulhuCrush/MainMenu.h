@@ -171,6 +171,12 @@ protected:
 
 private:
 
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	class USoundCue* ClickSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundCue* MusicCue;
+
 	int32 ProfileNum;
 
 	bool DisabledButtons = true;
@@ -203,7 +209,7 @@ private:
 	UWidget* Game;
 
 	UPROPERTY(meta = (BindWidget))
-	UWidget* EndScreen;
+	UWidget* EndMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	UWidgetSwitcher* GameSwitcher;
