@@ -163,7 +163,15 @@ protected:
 
 	virtual bool Initialize() override;
 
+	void CreateTraitPool();
+
+	void SelectCharacterTraits();
+
+	void ShuffleArray(TArray<FTrait> &Array);
+
 private:
+
+	int32 ProfileNum;
 
 	bool DisabledButtons = true;
 
@@ -171,8 +179,15 @@ private:
 	TArray<FTrait> Traits;
 
 	UPROPERTY(VisibleAnywhere)
+	TArray<FTrait> TraitPool;
+
+	UPROPERTY(EditAnywhere)
+	int32 NumOfOwningTraits;
+
+	UPROPERTY(VisibleAnywhere)
 	FString CorrectAnswer;
 
+	UPROPERTY(VisibleAnywhere)
 	FString SelectedAnswer;
 
 	UPROPERTY(VisibleAnywhere)
@@ -296,10 +311,25 @@ private:
 	UButton* CharacterButton;
 
 	UPROPERTY(meta = (BindWidget))
+	UScrollBox* TraitsBox;
+
+	UPROPERTY(EditAnywhere, Category = "Traits")
+	float TraitSpacer = 15.f;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SelectedNameText;
+
+	UPROPERTY(meta = (BindWidget))
 	UImage* SelectedProfileImage;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* ConfirmButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* EndProfileImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* EndScreenText;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ConfirmText;

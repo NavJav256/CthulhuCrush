@@ -13,20 +13,13 @@ bool UMainMenu::Initialize()
 {
 	if(!Super::Initialize()) return false;
 
-	//Pick Correct Answer
+	ProfileNum = FMath::RandRange(0, 4);
+	CorrectAnswer = Profiles[ProfileNum].Name;
 
-	//Remove traits that would disqualify correct answer from trait pool
+	CreateTraitPool();
 
-	//set all traits from remaining
+	SelectCharacterTraits();
 
-	//somehow compare correct answer to selection
-
-	/*
-	if (Traits)
-	{
-
-	}
-	*/
 	if (PlayButton)
 	{
 		PlayButton->OnPressed.AddDynamic(this, &UMainMenu::PlayButtonPressed);
@@ -89,6 +82,88 @@ bool UMainMenu::Initialize()
 		ConfirmButton->OnUnhovered.AddDynamic(this, &UMainMenu::UnHoverConfirmButton);
 	}
 	return true;
+}
+
+void UMainMenu::CreateTraitPool()
+{
+	TraitPool.Empty();
+	for (auto Trait : Traits)
+	{
+		if (!Trait.Disqualifies.Contains(CorrectAnswer))
+		{
+			TraitPool.Add(Trait);
+		}
+	}
+}
+
+void UMainMenu::SelectCharacterTraits()
+{
+	ShuffleArray(TraitPool);
+	TArray<FTrait> RemainingTraits = TraitPool;
+
+	TArray<int32> ProfileNums { 0, 1, 2, 3, 4 };
+	ProfileNums.Remove(ProfileNum);
+	TArray<FString> ProfileNames;
+
+	for (int32 Num : ProfileNums)
+	{
+		ProfileNames.Add(Profiles[Num].Name);
+	}
+
+	for (FString ProfileName : ProfileNames)
+	{
+		for (int32 i = 0; i < RemainingTraits.Num(); i++)
+		{
+			if (RemainingTraits[i].Disqualifies.Contains(ProfileName))
+			{
+				RemainingTraits[i].bOwning = true;
+				OwningTraits.Add(RemainingTraits[i]);
+				RemainingTraits.RemoveAt(i);
+				break;
+			}
+		}
+	}
+	
+	while (OwningTraits.Num() < NumOfOwningTraits && RemainingTraits.Num() > 0)
+	{
+		int32 Index = FMath::RandRange(0, RemainingTraits.Num() - 1);
+		RemainingTraits[Index].bOwning = true;
+		OwningTraits.Add(RemainingTraits[Index]);
+		RemainingTraits.RemoveAt(Index);
+	}
+	
+	for (auto T : OwningTraits)
+	{
+		UTextBlock* NewTraitText = NewObject<UTextBlock>(TraitsBox);
+		if (NewTraitText)
+		{
+			NewTraitText->SetAutoWrapText(true);
+			FSlateFontInfo FontInfo = NewTraitText->GetFont();
+			FontInfo.Size = 18;
+			NewTraitText->SetFont(FontInfo);
+			NewTraitText->SetText(FText::FromString(T.TraitName));
+			TraitsBox->AddChild(NewTraitText);
+		}
+
+		USizeBox* NewTraitSpacer = NewObject<USizeBox>(TraitsBox);
+		if (NewTraitSpacer)
+		{
+			NewTraitSpacer->SetMinDesiredHeight(TraitSpacer);
+			TraitsBox->AddChild(NewTraitSpacer);
+		}
+	}
+}
+
+void UMainMenu::ShuffleArray(TArray<FTrait> &Array)
+{
+	for (int32 i = Array.Num() - 1; i > 0; i--)
+	{
+		int32 j = FMath::RandRange(0, i);
+		if (i != j)
+		{
+			Array.Swap(i, j);
+		}
+	}
 }
 
 void UMainMenu::Setup()
@@ -168,7 +243,24 @@ void UMainMenu::UnHoverExitButton()
 
 void UMainMenu::ConfirmButtonPressed()
 {
-	//End game
+	if (EndScreenText)
+	{
+		FString EndText;
+		if (SelectedAnswer.Equals(CorrectAnswer))
+		{
+			EndText = TEXT("Congratulations! You are now a follower!");
+		}
+		else
+		{
+			EndText = TEXT("Unfortunately, you have been deemed unworthy!\nYou are to be sacrificed!");
+		}
+		EndScreenText->SetText(FText::FromString(EndText));
+	}
+	if (EndScreen)
+	{
+		SwitchGameMenu(EndScreen);
+	}
+
 }
 
 void UMainMenu::HoverConfirmButton()
@@ -266,8 +358,10 @@ void UMainMenu::PestilenceButtonPressed()
 	if (ProfileScreen)
 	{
 		bool Valid =
+			EndProfileImage && 
 			ProfileImage &&
 			SelectedProfileImage &&
+			SelectedNameText &&
 			NameText &&
 			HeightText &&
 			WeightText &&
@@ -288,6 +382,8 @@ void UMainMenu::PestilenceButtonPressed()
 			RaceText->SetText(FText::FromString(Profiles[0].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[0].ProfilePic);
 			SelectedProfileImage->SetBrushFromTexture(Profiles[0].ProfilePic);
+			EndProfileImage->SetBrushFromTexture(Profiles[0].ProfilePic);
+			SelectedNameText->SetText(FText::FromString(Profiles[0].Name));
 			CultSign->SetBrushFromTexture(Profiles[0].CultSign);
 			SearchResultText->SetText(FText::FromString(Profiles[0].Name));
 			SearchTextOne->SetText(FText::FromString(Profiles[0].SearchResults[0]));
@@ -404,8 +500,10 @@ void UMainMenu::WidowButtonPressed()
 	if (ProfileScreen)
 	{
 		bool Valid =
+			EndProfileImage &&
 			ProfileImage &&
 			SelectedProfileImage &&
+			SelectedNameText &&
 			NameText &&
 			HeightText &&
 			WeightText &&
@@ -426,6 +524,8 @@ void UMainMenu::WidowButtonPressed()
 			RaceText->SetText(FText::FromString(Profiles[1].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[1].ProfilePic);
 			SelectedProfileImage->SetBrushFromTexture(Profiles[1].ProfilePic);
+			EndProfileImage->SetBrushFromTexture(Profiles[1].ProfilePic);
+			SelectedNameText->SetText(FText::FromString(Profiles[1].Name));
 			CultSign->SetBrushFromTexture(Profiles[1].CultSign);
 			SearchResultText->SetText(FText::FromString(Profiles[1].Name));
 			SearchTextOne->SetText(FText::FromString(Profiles[1].SearchResults[0]));
@@ -541,8 +641,10 @@ void UMainMenu::GruudButtonPressed()
 	if (ProfileScreen)
 	{
 		bool Valid =
+			EndProfileImage &&
 			ProfileImage &&
 			SelectedProfileImage &&
+			SelectedNameText &&
 			NameText &&
 			HeightText &&
 			WeightText &&
@@ -563,6 +665,8 @@ void UMainMenu::GruudButtonPressed()
 			RaceText->SetText(FText::FromString(Profiles[2].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[2].ProfilePic);
 			SelectedProfileImage->SetBrushFromTexture(Profiles[2].ProfilePic);
+			EndProfileImage->SetBrushFromTexture(Profiles[2].ProfilePic);
+			SelectedNameText->SetText(FText::FromString(Profiles[2].Name));
 			CultSign->SetBrushFromTexture(Profiles[2].CultSign);
 			SearchResultText->SetText(FText::FromString(Profiles[2].Name));
 			SearchTextOne->SetText(FText::FromString(Profiles[2].SearchResults[0]));
@@ -679,8 +783,10 @@ void UMainMenu::BigTreeButtonPressed()
 	if (ProfileScreen)
 	{
 		bool Valid =
+			EndProfileImage &&
 			ProfileImage &&
 			SelectedProfileImage &&
+			SelectedNameText &&
 			NameText &&
 			HeightText &&
 			WeightText &&
@@ -701,6 +807,8 @@ void UMainMenu::BigTreeButtonPressed()
 			RaceText->SetText(FText::FromString(Profiles[3].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[3].ProfilePic);
 			SelectedProfileImage->SetBrushFromTexture(Profiles[3].ProfilePic);
+			EndProfileImage->SetBrushFromTexture(Profiles[3].ProfilePic);
+			SelectedNameText->SetText(FText::FromString(Profiles[3].Name));
 			CultSign->SetBrushFromTexture(Profiles[3].CultSign);
 			SearchResultText->SetText(FText::FromString(Profiles[3].Name));
 			SearchTextOne->SetText(FText::FromString(Profiles[3].SearchResults[0]));
@@ -816,8 +924,10 @@ void UMainMenu::CthulhuButtonPressed()
 	if (ProfileScreen)
 	{
 		bool Valid =
+			EndProfileImage &&
 			ProfileImage &&
 			SelectedProfileImage &&
+			SelectedNameText &&
 			NameText &&
 			HeightText &&
 			WeightText &&
@@ -838,6 +948,8 @@ void UMainMenu::CthulhuButtonPressed()
 			RaceText->SetText(FText::FromString(Profiles[4].Race));
 			ProfileImage->SetBrushFromTexture(Profiles[4].ProfilePic);
 			SelectedProfileImage->SetBrushFromTexture(Profiles[4].ProfilePic);
+			EndProfileImage->SetBrushFromTexture(Profiles[4].ProfilePic);
+			SelectedNameText->SetText(FText::FromString(Profiles[4].Name));
 			CultSign->SetBrushFromTexture(Profiles[4].CultSign);
 			SearchResultText->SetText(FText::FromString(Profiles[4].Name));
 			SearchTextOne->SetText(FText::FromString(Profiles[4].SearchResults[0]));
